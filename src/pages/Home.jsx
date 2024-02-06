@@ -1,50 +1,57 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { titleTodo } from "../redux/modules/title";
-import { bodyTodo } from "../redux/modules/body";
-import { addTodo, switchTodo } from "../redux/modules/todos";
+import { titleTodo, renewTitle } from "../redux/modules/title";
+import { bodyTodo, renewBody } from "../redux/modules/body";
+import { addTodo } from "../redux/modules/todos";
+import Todolist from "../components/todolist";
+
 const Home = () => {
   const dispatch = useDispatch();
+
   const title = useSelector((state) => state.setTitle.title);
   const body = useSelector((state) => state.setBody.body);
   const todolist = useSelector((state) => state.todos.todolist);
+
+  const isActive = true;
   return (
     <>
       <header></header>
       <main>
         <input
-          defaultValue={title}
-          onChange={(e) => dispatch(titleTodo(e.target.value))}
+          value={title}
+          onChange={(e) => {
+            dispatch(titleTodo(e.target.value));
+          }}
         ></input>
         <input
-          defaultValue={body}
+          value={body}
           onChange={(e) => dispatch(bodyTodo(e.target.value))}
         ></input>
-        <button onClick={() => dispatch(addTodo({ title, body }))}>
+        <button
+          onClick={() => {
+            dispatch(addTodo({ title, body }));
+            dispatch(renewTitle());
+            dispatch(renewBody());
+          }}
+        >
           Submit
         </button>
         <div>
           Todolist
           <br />
-          {todolist.map((todo) => {
-            return (
-              <div key={todo.id}>
-                <div>
-                  <p>Title: {todo.title}</p>
-                  <p>Todo: {todo.body}</p>
-                </div>
-                <button onClick={() => dispatch(switchTodo(todo.id))}>
-                  완료
-                </button>
-                <button>삭제</button>
-                <button>상세보기</button>
-              </div>
-            );
-          })}
+          {todolist
+            .filter((todo) => todo.isDone === false)
+            .map((todo) => (
+              <Todolist key={todo.id} todo={todo} isActive={isActive} />
+            ))}
         </div>
         <div>
           Donelist <br />
-          {todolist.filter((todo) => todo.isDone === true)}
+          {todolist
+            .filter((todo) => todo.isDone === true)
+            .map((todo) => (
+              <Todolist key={todo.id} todo={todo} />
+            ))}
         </div>
       </main>
       <footer></footer>

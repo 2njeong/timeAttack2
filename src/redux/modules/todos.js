@@ -12,15 +12,17 @@ export const addTodo = (payload) => {
   };
 };
 
-export const deleteTodo = () => {
+export const deleteTodo = (payload) => {
   return {
     type: DELETE_TODO,
+    payload,
   };
 };
 
-export const switchTodo = () => {
+export const switchTodo = (payload) => {
   return {
     type: SWITCH_TODO,
+    payload,
   };
 };
 
@@ -44,16 +46,25 @@ export const todos = (state = initialState, action) => {
         todolist: [...state.todolist, newTodo],
       }; //TODO: 여기 작성
 
-    // case DELETE_TODO:
-    //   return; //TODO: 여기 작성
+    case DELETE_TODO:
+      const restList = state.todolist.filter(
+        (todo) => todo.id !== action.payload
+      );
+      return {
+        ...state,
+        todolist: restList,
+      };
 
     case SWITCH_TODO:
       const foundTodo = state.todolist.find(
         (todo) => todo.id === action.payload
       );
+      const doneTodoList = state.todolist.filter(
+        (todo) => todo.id !== foundTodo.id
+      );
       return {
-        ...foundTodo,
-        isDone: true,
+        ...state,
+        todolist: [...doneTodoList, { ...foundTodo, isDone: true }],
       };
 
     default:
